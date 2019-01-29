@@ -70,6 +70,10 @@ void MTQueue<T>::Push(T elem)
 		m_numOfElem = 1;
 		return;
 	}
+	if (m_numOfElem == m_maxElemNum)
+	{
+
+	}
 
 	Elem* tempPtr = m_frontElem;
 	m_frontElem = new Elem();
