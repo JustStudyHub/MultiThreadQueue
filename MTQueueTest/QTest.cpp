@@ -174,24 +174,27 @@ namespace MTQueueTest
 			size_t queueMaxSize = 10'000;
 			size_t firstThread = queueMaxSize - 3'000;
 			size_t secondThread = queueMaxSize - firstThread;
+			int resSum = 0;
+			std::atomic<int> sum = 0;
+			int checkSum = 10 * (queueMaxSize/20 * (queueMaxSize/10 - 1));
 			std::thread th([&]()
 			{
 				for (int i = 0; i < firstThread; i++)
 				{
-					std::cout << tQueue.Pop() << std::endl;
+					sum += tQueue.Pop();
 				}
 			});
 
 			for (int i = 0; i < 10; i++)
 			{
 				tVec.push_back(std::thread([&]() {
-					for (int j = 0; j < 1000; ++j)
+					for (int j = 0; j < 1'000; ++j)
 						tQueue.Push(j);
 				}));
 			}
 			for (int i = 0; i < secondThread; i++)
 			{
-				std::cout << tQueue.Pop() << std::endl;
+				sum += tQueue.Pop();
 			}
 			for (int i = 0; i < 10; i++)
 			{
@@ -199,6 +202,8 @@ namespace MTQueueTest
 			}
 			
 			th.join();
+			resSum = sum;
+			Assert::AreEqual(resSum, checkSum);
 			Assert::AreEqual(tQueue.Size(), (size_t)0);
 		}
 	};

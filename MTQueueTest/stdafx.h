@@ -11,6 +11,7 @@
 #include "CppUnitTest.h"
 #include <vector>
 #include <condition_variable>
+#include <atomic>
 #include <mutex>
 #include <thread>
 #include <chrono>
