@@ -15,6 +15,7 @@
 #include <condition_variable>
 #include <mutex>
 #include <thread>
+#include <ctime>
 #include <chrono>
 #include "MTQueue.h"
 #endif //PCH_H

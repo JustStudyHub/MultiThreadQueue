@@ -8,7 +8,8 @@ public:
 	MTQueue();
 	~MTQueue();
 	T Pop();
-	void Push(T elem);
+	void Push(T& elem);
+	size_t Size();
 private:
 	struct Elem
 	{
@@ -18,13 +19,11 @@ private:
 	};
 	bool Empty();
 	size_t m_numOfElem;
-	static const size_t m_maxElemNum = 100;
+	static const size_t m_maxElemNum = 10'000;
 	Elem* m_frontElem;
 	Elem* m_backElem;
 	std::condition_variable m_condVar;
-	//std::condition_variable m_condPop;
 	std::mutex m_mutex;
-	//std::mutex m_popMtx;
 };
 
 template <typename T>
@@ -53,7 +52,7 @@ template <typename T>
 T MTQueue<T>::Pop()
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
-
+	std::time_t timer = clock();
 	while (Empty())
 	{
 		m_condVar.wait(lock);
@@ -69,7 +68,7 @@ T MTQueue<T>::Pop()
 }
 
 template <typename T>
-void MTQueue<T>::Push(T elem)
+void MTQueue<T>::Push(T& elem)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	if (m_numOfElem == 0)
@@ -99,4 +98,10 @@ template <typename T>
 bool MTQueue<T>::Empty()
 {
 	return (m_numOfElem == 0);
+}
+
+template <typename T>
+size_t MTQueue<T>::Size() 
+{
+	return m_numOfElem;
 }

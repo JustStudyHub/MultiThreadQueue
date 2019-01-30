@@ -29,6 +29,5 @@ int main()
 		tVec[i].join();
 	}
 	th.join();
-    std::cout << "Hello World!\n"; 
 	return 0;
 }
