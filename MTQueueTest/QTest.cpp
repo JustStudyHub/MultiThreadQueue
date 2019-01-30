@@ -108,41 +108,58 @@ namespace MTQueueTest
 			Assert::AreEqual(tQueue2.Size(), (size_t)3333);
 		}
 
-		TEST_METHOD(PopInTwoThread)
+		TEST_METHOD(PopInTwoThreadZero)
 		{
 			MTQueue<int> tQueue1;
 			size_t queueMaxSize = 10000;  //real Queue Max Size
-			size_t firstThread = queueMaxSize - 30;
+			size_t firstThread = queueMaxSize - 3'760;
 			size_t secondThread = queueMaxSize - firstThread;
 			std::thread th1([&]() {
 				for (int i = 0; i < firstThread; ++i)
 				{
-					tQueue1.Push(i);
+					tQueue1.Pop();
 				}
 			});
-			for (int i = 0; i < secondThread; ++i)
+			std::thread th2([&]() {
+				for (int i = 0; i < secondThread; ++i)
+				{
+					tQueue1.Pop();
+				}
+			});
+			for (int i = 0; i < queueMaxSize; ++i)
 			{
 				tQueue1.Push(i);
 			}
 			th1.join();
-			Assert::AreEqual(tQueue1.Size(), queueMaxSize);
-
-			MTQueue<int> tQueue2;
-			queueMaxSize = 7000;
-			firstThread = queueMaxSize - 300;
-			secondThread = queueMaxSize - firstThread;
-			std::thread th2([&]() {
+			th2.join();
+			Assert::AreEqual(tQueue1.Size(), (size_t)0);
+		}
+		TEST_METHOD(PopInTwoThread)
+		{
+			MTQueue<int> tQueue1;
+			size_t queueMaxSize = 10000;  //real Queue Max Size
+			size_t firstThread = queueMaxSize - 3'760;
+			size_t secondThread = queueMaxSize - firstThread - 2'100;
+			size_t resSize = queueMaxSize - firstThread - secondThread;
+			std::thread th1([&]() {
 				for (int i = 0; i < firstThread; ++i)
 				{
-					tQueue2.Push(i);
+					tQueue1.Pop();
 				}
 			});
-			for (int i = 0; i < secondThread; ++i)
+			std::thread th2([&]() {
+				for (int i = 0; i < secondThread; ++i)
+				{
+					tQueue1.Pop();
+				}
+			});
+			for (int i = 0; i < queueMaxSize; ++i)
 			{
-				tQueue2.Push(i);
+				tQueue1.Push(i);
 			}
+			th1.join();
 			th2.join();
-			Assert::AreEqual(tQueue2.Size(), queueMaxSize);
+			Assert::AreEqual(tQueue1.Size(), resSize);
 		}
 	};
 
@@ -154,8 +171,8 @@ namespace MTQueueTest
 		{
 			std::vector<std::thread> tVec;
 			MTQueue<int> tQueue;
-			size_t queueMaxSize = 10000;
-			size_t firstThread = queueMaxSize - 3000;
+			size_t queueMaxSize = 10'000;
+			size_t firstThread = queueMaxSize - 3'000;
 			size_t secondThread = queueMaxSize - firstThread;
 			std::thread th([&]()
 			{
