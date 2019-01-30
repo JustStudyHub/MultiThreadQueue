@@ -11,7 +11,7 @@ private:
 	struct Elem
 	{
 		Elem();
-		Elem* m_prevElem;
+		Elem* m_nextElem;
 		T m_value;
 	};
 	size_t m_numOfElem;
@@ -39,7 +39,7 @@ MTQueue<T>::~MTQueue()
 template <typename T>
 MTQueue<T>::Elem::Elem()
 {
-	m_prevElem = nullptr;
+	m_nextElem = nullptr;
 }
 
 template <typename T>
@@ -52,7 +52,7 @@ T MTQueue<T>::Pop()
 	else
 	{
 		T res = m_frontElem->m_value;
-		Elem* temp = m_frontElem->m_prevElem;
+		Elem* temp = m_frontElem->m_nextElem;
 		delete m_frontElem;
 		m_frontElem = temp;
 		--m_numOfElem;
@@ -65,19 +65,21 @@ void MTQueue<T>::Push(T elem)
 {
 	if (m_numOfElem == 0)
 	{
-		m_frontElem = new Elem();
-		m_frontElem->m_value = elem;
+		m_backElem = new Elem();		
+		m_backElem->m_value = elem;
+		m_frontElem = m_backElem;
 		m_numOfElem = 1;
 		return;
 	}
+
 	if (m_numOfElem == m_maxElemNum)
 	{
 
 	}
 
-	Elem* tempPtr = m_frontElem;
-	m_frontElem = new Elem();
-	m_frontElem->m_prevElem = tempPtr;
-	m_frontElem->m_value = elem;
+	Elem* tempPtr = m_backElem;
+	m_backElem = new Elem();
+	m_backElem->m_value = elem;
+	tempPtr->m_nextElem = m_backElem;
 	++m_numOfElem;
 }
