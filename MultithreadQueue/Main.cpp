@@ -1,19 +1,34 @@
-
 #include "pch.h"
-#include <iostream>
-#include "MTQueue.h"
+
 
 int main()
 {
+	std::vector<std::thread> tVec;
 	MTQueue<int> testQueue;
-	for (int i = 0; i < 15; i++)
+	std::thread th([&]()
 	{
-		testQueue.Push(i);
+		for (int i = 0; i < 100; i++)
+		{
+			std::cout << testQueue.Pop() << std::endl;
+		}
+	});
+	
+	for (int i = 0; i < 10; i++)
+	{
+		tVec.push_back(std::thread([&]() {
+			for (int j = 0; j < 20; ++j)
+			testQueue.Push(j);
+		}));		
 	}
-	for (int i = 0; i < 15; i++)
+	for (int i = 0; i < 100; i++)
 	{
 		std::cout << testQueue.Pop() << std::endl;
 	}
+	for (int i = 0; i < 10; i++)
+	{
+		tVec[i].join();
+	}
+	th.join();
     std::cout << "Hello World!\n"; 
 	return 0;
 }

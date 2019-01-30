@@ -10,5 +10,11 @@
 #define PCH_H
 
 // TODO: add headers that you want to pre-compile here
-
+#include <iostream>
+#include <vector>
+#include <condition_variable>
+#include <mutex>
+#include <thread>
+#include <chrono>
+#include "MTQueue.h"
 #endif //PCH_H
